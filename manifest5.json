@@ -1,10 +1,10 @@
 {
   "manifest_version": 1,
   "name": "My Private Extension",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "action": {
     "title": "My Extension",
-    "icon": "https://owlbear.rodeo",
-    "popover": "https://github.io"
+    "icon": "icon.svg",
+    "popover": "index.html"
   }
 }
