@@ -1,5 +1,5 @@
 {
-  "manifestVersion": 1,
+  "manifest_version": 1,
   "id": "my-first-private-extension",
   "name": "My Private Extension",
   "version": "1.0.0",
