@@ -5,6 +5,6 @@
   "action": {
     "title": "My Extension",
     "icon": "https://owlbear.rodeo",
-    "popover": "./index.html"
+    "popover": "owlbeartest/index.html"
   }
 }
