@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "action": {
     "title": "My Extension",
-    "icon": "https://github.io",
-    "popover": "https://github.io",
-    "height": 600,
-    "width": 400
+    "popover": "index.html"
   }
 }
