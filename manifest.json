@@ -3,6 +3,7 @@
   "id": "my-first-private-extension",
   "name": "My Private Extension",
   "version": "1.0.0",
+  "targetUrl": "https://sambae123.github.io/owlbeartest/",
   "action": {
     "title": "My Extension",
     "icon": "icon.svg",
