@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Owlbear Extension</title>
+    <!-- โหลด SDK ของ Owlbear ผ่าน CDN (วิธีที่ง่ายที่สุด ไม่ต้องลง npm) -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { font-family: sans-serif; background: #222; color: #fff; padding: 15px; }
+        button { background: #ffaa00; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h3>Hello Owlbear! 🎲</h3>
+    <p>นี่คือ Extension แรกของฉัน</p>
+    <button id="pingBtn">คลิกเพื่อเช็คชื่อ</button>
+
+    <script>
+        // เริ่มต้นเชื่อมต่อกับ Owlbear Rodeo
+        OBR.onReady(() => {
+            console.log("Extension พร้อมใช้งานแล้ว!");
+            
+            document.getElementById('pingBtn').addEventListener('click', async () => {
+                // ตัวอย่างคำสั่ง: ดึงชื่อของผู้เล่นที่กำลังกดปุ่มนี้อยู่
+                const playerName = await OBR.player.getName();
+                alert(`สวัสดีคุณ ${playerName}! Extension ทำงานได้ปกติแล้วจ้า`);
+            });
+        });
+    </script>
+</body>
+</html>

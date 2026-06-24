@@ -1,0 +1,11 @@
+{
+  "manifestVersion": 1,
+  "id": "my-first-private-extension",
+  "name": "My Private Extension",
+  "version": "1.0.0",
+  "action": {
+    "title": "My Extension",
+    "icon": "icon.svg",
+    "popover": "index.html"
+  }
+}
