@@ -1,0 +1,12 @@
+{
+  "manifest_version": 1,
+  "name": "My Private Extension",
+  "version": "1.0.0",
+  "action": {
+    "title": "My Extension",
+    "icon": "/icon.svg",
+    "popover": "/index.html",
+    "height": 600,
+    "width": 400
+  }
+}
