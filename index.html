@@ -3,154 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Status Bars</title>
+    <title>My Owlbear Extension</title>
+    <!-- โหลด SDK ของ Owlbear ผ่าน CDN (วิธีที่ง่ายที่สุด ไม่ต้องลง npm) -->
     <script src="https://unpkg.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1e1e24; color: #f4f4f9; padding: 15px; margin: 0; }
-        .setup-box { background: #2a2a35; padding: 12px; border-radius: 8px; border: 1px solid #3f3f50; margin-bottom: 15px; }
-        .input-group { display: flex; gap: 8px; margin-bottom: 8px; }
-        input { background: #3a3a4a; border: 1px solid #5a5a75; color: #fff; padding: 6px; border-radius: 4px; flex: 1; min-width: 0; }
-        .btn { background: #4a90e2; border: none; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-success { background: #2ecc71; }
-        .bar-container { background: #2a2a35; padding: 12px; border-radius: 8px; border: 1px solid #3f3f50; display: flex; flex-direction: column; gap: 12px; }
-        .bar-item { display: flex; flex-direction: column; gap: 4px; }
-        .bar-header { display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; }
-        .progress-bg { background: #444; width: 100%; height: 20px; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid #555; }
-        .progress-fill { background: #e74c3c; height: 100%; width: 0%; transition: width 0.3s ease; }
-        .bar-controls { display: flex; gap: 6px; margin-top: 5px; }
-        .btn-small { padding: 3px 8px; font-size: 12px; background: #555; }
+        body { font-family: sans-serif; background: #222; color: #fff; padding: 15px; }
+        button { background: #ffaa00; border: none; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <!-- ส่วนที่ 1: ตั้งค่าสร้างหลอดใหม่ -->
-    <div class="setup-box">
-        <h4 style="margin-top:0; margin-bottom:10px;">🛠️ สร้างหลอดสถานะใหม่</h4>
-        <div class="input-group">
-            <input type="text" id="statName" placeholder="ชื่อหลอด (เช่น HP, Mana, Shield)">
-            <input type="number" id="maxVal" placeholder="ค่าสูงสุด" style="max-width: 80px;">
-        </div>
-        <button class="btn btn-success" id="createBtn" style="width:100%;">สร้างหลอดสถานะ</button>
-    </div>
-
-    <!-- ส่วนที่ 2: พื้นที่แสดงผลหลอดสถานะทั้งหมด -->
-    <div class="bar-container" id="barContainer">
-        <p style="text-align:center; color:#aaa; font-size:14px; margin:0;" id="emptyText">ยังไม่มีหลอดสถานะ กรุณาสร้างจากด้านบน</p>
-    </div>
+    <h3>Hello Owlbear! 🎲</h3>
+    <p>นี่คือ Extension แรกของฉัน</p>
+    <button id="pingBtn">คลิกเพื่อเช็คชื่อ</button>
 
     <script>
-        const EXT_ID = "com.myprivate.dynamic-bars"; // รหัสอ้างอิงของส่วนเสริมเรา
-        let currentBars = {}; // เก็บข้อมูลหลอดในหน่วยความจำชั่วคราว
-
-        OBR.onReady(async () => {
-            console.log("Dynamic Bars ready.");
-
-            // 1. ตรวจจับและดึงข้อมูลเมื่อมีใครก็ตามอัปเดตค่าในห้อง (Sync สดๆ ข้ามจอ)
-            OBR.room.onMetadataChange((metadata) => {
-                const roomData = metadata[EXT_ID];
-                if (roomData && roomData.bars) {
-                    currentBars = roomData.bars;
-                    renderBars();
-                } else {
-                    currentBars = {};
-                    renderBars();
-                }
-            });
-
-            // 2. ดึงข้อมูลรอบแรกสุดเมื่อเพิ่งเปิด Extension ขึ้นมาใช้งานครั้งแรก
-            const initialMetadata = await OBR.room.getMetadata();
-            if (initialMetadata[EXT_ID] && initialMetadata[EXT_ID].bars) {
-                currentBars = initialMetadata[EXT_ID].bars;
-                renderBars();
-            }
-
-            // 3. ปลุกปุ่มกดสร้างหลอดให้ทำงาน
-            document.getElementById('createBtn').addEventListener('click', async () => {
-                const name = document.getElementById('statName').value.trim();
-                const max = parseInt(document.getElementById('maxVal').value);
-
-                if (!name || isNaN(max) || max <= 0) {
-                    alert("กรุณากรอกชื่อและค่าสูงสุดให้ถูกต้องครับ");
-                    return;
-                }
-
-                // แอบเพิ่มข้อมูลใหม่เข้าไปในรายการเดิม
-                const barId = "bar_" + Date.now(); // สุ่มไอดีไม่ให้ซ้ำกัน
-                currentBars[barId] = { name: name, current: max, max: max };
-
-                // ส่งอัปเดตข้อมูลขึ้นไปบน Server ของ Owlbear ห้องจะซิงค์ทันที
-                await OBR.room.setMetadata({ [EXT_ID]: { bars: currentBars } });
-
-                // เคลียร์ช่องอินพุตให้ว่างพร้อมรับค่าต่อไป
-                document.getElementById('statName').value = "";
-                document.getElementById('maxVal').value = "";
+        // เริ่มต้นเชื่อมต่อกับ Owlbear Rodeo
+        OBR.onReady(() => {
+            console.log("Extension พร้อมใช้งานแล้ว!");
+            
+            document.getElementById('pingBtn').addEventListener('click', async () => {
+                // ตัวอย่างคำสั่ง: ดึงชื่อของผู้เล่นที่กำลังกดปุ่มนี้อยู่
+                const playerName = await OBR.player.getName();
+                alert(`สวัสดีคุณ ${playerName}! Extension ทำงานได้ปกติแล้วจ้า`);
             });
         });
-
-        // ฟังก์ชันวาดหลอดสถานะต่างๆ ลงบนหน้าจอแอป
-        function renderBars() {
-            const container = document.getElementById('barContainer');
-            const emptyText = document.getElementById('emptyText');
-            
-            // ลบแถบเก่าทั้งหมดออกก่อนเพื่อวาดใหม่
-            const existingItems = container.querySelectorAll('.bar-item');
-            existingItems.forEach(item => item.remove());
-
-            const keys = Object.keys(currentBars);
-            if (keys.length === 0) {
-                emptyText.style.display = "block";
-                return;
-            }
-            emptyText.style.display = "none";
-
-            // วนลูปวาดการแสดงผลทีละหลอด
-            keys.forEach(id => {
-                const data = currentBars[id];
-                const pct = (data.current / data.max) * 100;
-
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'bar-item';
-                itemDiv.innerHTML = `
-                    <div class="bar-header">
-                        <span>${data.name}</span>
-                        <span>${data.current} / ${data.max}</span>
-                    </div>
-                    <div class="progress-bg">
-                        <div class="progress-fill" style="width: ${pct}%;"></div>
-                    </div>
-                    <div class="bar-controls">
-                        <button class="btn btn-small" onclick="updateValue('${id}', -1)">-1</button>
-                        <button class="btn btn-small" onclick="updateValue('${id}', 1)">+1</button>
-                        <button class="btn btn-small" onclick="updateValue('${id}', -5)">-5</button>
-                        <button class="btn btn-small" onclick="updateValue('${id}', 5)">+5</button>
-                        <button class="btn btn-small" style="background:#c0392b; margin-left:auto;" onclick="deleteBar('${id}')">🗑️</button>
-                    </div>
-                `;
-                container.appendChild(itemDiv);
-            });
-        }
-
-        // ฟังก์ชันกดปุ่มเพื่อบวกลบแต้มพลังในหลอด
-        async function updateValue(id, amount) {
-            if (!currentBars[id]) return;
-            
-            let target = currentBars[id].current + amount;
-            // เช็คไม่ให้ค่าทะลุเกณฑ์ขอบเขตต่ำสุด-สูงสุด
-            if (target < 0) target = 0;
-            if (target > currentBars[id].max) target = currentBars[id].max;
-
-            currentBars[id].current = target;
-            // เซฟค่าเวอร์ชันใหม่ส่งไปซิงค์ทุกคน
-            await OBR.room.setMetadata({ [EXT_ID]: { bars: currentBars } });
-        }
-
-        // ฟังก์ชันลบหลอดนั้นทิ้งเมื่อไม่ใช้งานแล้ว
-        async function deleteBar(id) {
-            if (confirm("ต้องการลบหลอดสถานะนี้ใช่ไหม?")) {
-                delete currentBars[id];
-                await OBR.room.setMetadata({ [EXT_ID]: { bars: currentBars } });
-            }
-        }
     </script>
 </body>
 </html>
