@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "action": {
     "title": "My Extension",
+    "icon": "https://owlbear.rodeo",
     "popover": "index.html"
   }
 }
